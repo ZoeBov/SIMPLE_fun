@@ -4,9 +4,9 @@ Title: Simulates the water balance in soil through various hydrological processe
 Version: 0.1.0
 Authors@R: c(
     person(
-      given = "Zoe",
+      given = "Zoe E.",
       family = "Bovermann",
-      email = "zoe@example.com",
+      email = "bovermann@iww.uni-hannover.de",
       = c("aut", "cre"),
       comment = "Translated to R and created the package"
     ),
@@ -31,4 +31,5 @@ Description: The model processes the input data on a daily basis (or according t
 License: MIT
 Encoding: UTF-8
 LazyData: true
+
 
