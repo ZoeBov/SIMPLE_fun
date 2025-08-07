@@ -1,0 +1,33 @@
+Package: SIMPLEfun
+Type: Package
+Title: Simulates the water balance in soil through various hydrological processes
+Version: 0.1.0
+Authors@R: c(
+    person(
+      given = "Zoe",
+      family = "Bovermann",
+      email = "zoe@example.com",
+      = c("aut", "cre"),
+      comment = "Translated to R and creating the package"
+    ),
+    person(
+      given = "Georg",
+      family = "Hörmann",
+      = "cph",
+      comment = "Original Excel spreadsheet development"
+    ),
+    person(
+      given = "Kristian",
+      family = "Förster",
+      = "ctb",
+      comment = "Extended (snow, surface runoff) in 2022"
+    )
+)
+Description: The model processes the input data on a daily basis (or according to the time resolution) to include the following aspects:
+   - Snow Accumulation and Melt: Calculations for snow-water-equivalent and snowmelt are conducted.
+   - Evapotranspiration (ETP) and Interception: The model computes the system’s evapotranspirative demand using a coefficient-based approach, the Leaf Area Index, and interception-related parameters.
+   - Soil Water Capacity and Balancing: It computes different stages of infiltration, soil moisture content, and storage.
+   - Surface Runoff and Total Runoff: In addition to soil water processes, it also handles surface runoff.
+License: MIT
+Encoding: UTF-8
+LazyData: true
