@@ -8,7 +8,7 @@ Authors@R: c(
       family = "Bovermann",
       email = "zoe@example.com",
       = c("aut", "cre"),
-      comment = "Translated to R and creating the package"
+      comment = "Translated to R and created the package"
     ),
     person(
       given = "Georg",
@@ -31,3 +31,4 @@ Description: The model processes the input data on a daily basis (or according t
 License: MIT
 Encoding: UTF-8
 LazyData: true
+
