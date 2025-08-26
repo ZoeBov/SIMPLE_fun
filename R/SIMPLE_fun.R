@@ -26,14 +26,14 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
 
   
   # Parameter numbers in soil_physics.txt
-  N_FIELD_CAP <- 6
-  N_PWP <- 7
-  N_STARTRED <-9
-  N_INITSTOR <- 10
-  N_LANDUSE <- 12
-  N_LAMBDA <- 17
-  N_LITTERCAP <- 18
-  N_LITTERRED <- 20
+  N_FIELD_CAP <- 1 #6
+  N_PWP <- 2 # 7 
+  N_STARTRED <-3 #9
+  N_INITSTOR <- 4 #10
+  N_LANDUSE <- 5 #12
+  N_LAMBDA <- 6 #17
+  #N_LITTERCAP <- 7 #18
+  N_LITTERRED <- 7
 
   # water balance check
   sum_prec   <- 0.
@@ -141,17 +141,18 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
 
     # col 13+14+15
     # first row
+    litter_cap<-Landuse[16,which(colnames(Landuse)==Soil[N_LANDUSE,2])]
     if(krow==1){
       # col 13: M ETi Litter
-      temp <- c(as.numeric(Soil[N_LITTERCAP,2]), (0+bucket_model[krow,11])/as.numeric(Soil[N_LITTERRED,2]))
+      temp <- c(litter_cap, (0+bucket_model[krow,11])/as.numeric(Soil[N_LITTERRED,2]))
       bucket_model[krow,13] <- min(c(bucket_model[krow,12],min(temp)))
 
       # col 14: N Bilanz (needed for col 13 & 15)
       bucket_model[krow,14] <- 0 + bucket_model[krow,11] - bucket_model[krow,13]
 
       # col 15: O Content (needed for col 13 & 14)
-      if(bucket_model[krow,14] > as.numeric(Soil[N_LITTERCAP,2])){
-        bucket_model[krow,15] <- as.numeric(Soil[N_LITTERCAP,2])
+      if(bucket_model[krow,14] > litter_cap){
+        bucket_model[krow,15] <- litter_cap
       }
       else bucket_model[krow,15] <- max(c(0,bucket_model[krow,14]))
 
@@ -191,7 +192,8 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
       bucket_model[krow,20] <- init_stor + bucket_model[krow,18]
 
       # col 21: U ETa
-      if(bucket_model[krow,20] > as.numeric(Soil[N_STARTRED,2])){
+      start_of_red <- as.numeric(Soil[N_STARTRED,2])
+      if(bucket_model[krow,20] > start_of_red){
         bucket_model[krow,21] <-  bucket_model[krow,19]
       }
       else{
@@ -224,7 +226,8 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
       bucket_model[krow,17] <- (as.numeric(Soil[N_FIELD_CAP,2])-bucket_model[(krow-1),24])*0.25
 
       # col 18: R P-Inf
-      bucket_model[krow,18] <- min(c(bucket_model[krow,16],bucket_model[krow,17]))*(1-as.numeric(Soil[15,2])/100)
+      direct_runoff <- Landuse[13,which(colnames(Landuse)==Soil[N_LANDUSE,2])]
+      bucket_model[krow,18] <- min(c(bucket_model[krow,16],bucket_model[krow,17]))*(1-direct_runoff/100)
 
       # col 19: S S-Rest
       bucket_model[krow,19] <- -min(c(0,bucket_model[krow,14]))+bucket_model[krow,12]-bucket_model[krow,13]
@@ -233,7 +236,7 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
       bucket_model[krow,20] <- bucket_model[(krow-1),24] + bucket_model[krow,18]
 
       # col 21: U ETa
-      if(bucket_model[krow,20] > as.numeric(Soil[N_STARTRED,2])){
+      if(bucket_model[krow,20] > start_of_red){
         bucket_model[krow,21] <-  bucket_model[krow,19]
       }
       else{

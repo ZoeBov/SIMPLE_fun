@@ -1,0 +1,7 @@
+Field Capacity;92;(mm)
+Perm. Wilting Point;34.0;(mm)
+Start of Reduction;88.0;(mm)
+Init-Value Soil;65.0;(mm)
+Land use;grassland;(see land_use tab)
+Lambda;0.0004;(-)
+Litter Reduction factor;3;(-)

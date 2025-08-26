@@ -11,7 +11,7 @@ month	beech	corn	grassland	spruce	sugar_beet	urban	wi.wheat
 10	0.10	0.18	0.22	0.22	0.19	0.11	0.20
 11	0.10	0.11	0.20	0.10	0.14	0.10	0.18
 12	0.10	0.11	0.20	0.10	0.14	0.10	0.18
-Direct_runoff_factor	0	20	15	0	20	50	20
+Direct_runoff_factor	0	20	5	0	20	50	20
 LAImin	2.50	0.50	1.00	7.00	0.50	0.10	0.50
 LAImax	6.00	3.00	2.00	7.00	3.00	0.50	3.00
 Litter_cap	1.50	0.00	0.00	2.00	0.00	0.00	0.00
