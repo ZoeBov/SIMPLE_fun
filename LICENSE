@@ -1,0 +1,15 @@
+Copyright: all rights:
+Dr. Georg Hörmann
+Projektzentrum Ökosystemforschung
+Schauenburgerstr. 112
+24118 Kiel
+
+copies under GNU-Copylefts
+
+Sep 2022, changes by Kristian Förster
+Snow accumulation / melt added
+Haude ETP model included in spreadsheet
+more general temporal LAI distribution
+Slight changes to runoff generation
+
+Jan 2023, translation to R by Zoë Bovermann
