@@ -3,7 +3,7 @@
 # extended (snow, surface runoff) by Kristian Förster 2022
 # translated to R by Zoe Bovermann 2023
 
-SIMPLE_function <- function(Input, Landuse, LAI_model, Soil, ETP0) {
+SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
 
   # Load libraries
   suppressMessages(library(data.table))
