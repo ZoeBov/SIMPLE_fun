@@ -1,8 +1,8 @@
 Layer Thickness;400;mm
-Field Capacity;23;(%)
+Field Capacity;27;(%)
 Perm. Wilting Point;8.5;(%)
 Start of Reduction;22;(%)
-Init-Value Soil;16.25;(%)
+Init-Value Soil;12.0;(%)
 Land use;grassland;(see land_use tab)
 Gravitational drain;75;(mm/d)
 Litter Reduction factor;3;(-)

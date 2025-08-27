@@ -3,7 +3,7 @@ rm(list=ls())
 
 #### set working directory + file directory and load data ####
 
-data_file <- "Global_Input.txt"
+data_file <- "Meteo_Input.txt"
 land_use <- "Land_use.txt"
 LAI_model <- "LAI_model.txt"
 Soil <- "Soil_physics.txt"
