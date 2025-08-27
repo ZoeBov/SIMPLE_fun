@@ -26,20 +26,32 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
 
   
   # Parameter numbers in soil_physics.txt
-  N_FIELD_CAP <- 1 #6
-  N_PWP <- 2 # 7 
-  N_STARTRED <-3 #9
-  N_INITSTOR <- 4 #10
-  N_LANDUSE <- 5 #12
-  N_LAMBDA <- 6 #17
+  N_LAYERTHICK <-1
+  N_FIELD_CAP <- 2 #6
+  N_PWP <- 3 # 7 
+  N_STARTRED <-4 #9
+  N_INITSTOR <- 5 #10
+  N_LANDUSE <- 6 #12
+  N_GWR <- 7 #17
   #N_LITTERCAP <- 7 #18
-  N_LITTERRED <- 7
+  N_LITTERRED <- 8
 
+  # initialize model
+  dz <- as.numeric(Soil[N_LAYERTHICK,2])
+  fc <- dz*as.numeric(Soil[N_FIELD_CAP,2])/100
+  pwp <- dz*as.numeric(Soil[N_PWP,2])/100
+  start_of_red <- dz*as.numeric(Soil[N_STARTRED,2])/100
+  init_stor  <- dz*as.numeric(Soil[N_INITSTOR,2])/100
+  glugla_c <- as.numeric(Soil[N_GWR,2])
+  lambda <- glugla_c / dz^2
+  
+  test <- c(dz,fc,pwp,start_of_red,init_stor,glugla_c,lambda)
+  print(test)
+  
   # water balance check
   sum_prec   <- 0.
   sum_etr    <- 0.
   sum_runoff <- 0.
-  init_stor  <- as.numeric(Soil[N_INITSTOR,2])
   init_swe   <- 0.
   
 
@@ -180,7 +192,7 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
     # first row
     if(krow==1){
       # col 17: Q Inf-Limit
-      bucket_model[krow,17] <- (as.numeric(Soil[N_FIELD_CAP,2])-init_stor)*0.25*(1-Landuse[13,which(colnames(Landuse)==Soil[N_LANDUSE,2])]/100)
+      bucket_model[krow,17] <- (fc-init_stor)*0.25*(1-Landuse[13,which(colnames(Landuse)==Soil[N_LANDUSE,2])]/100)
 
       # col 18: R P-Inf
       bucket_model[krow,18] <- min(c(bucket_model[krow,16],bucket_model[krow,17]))*(1-Landuse[13,which(colnames(Landuse)==Soil[N_LANDUSE,2])]/100)
@@ -192,29 +204,28 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
       bucket_model[krow,20] <- init_stor + bucket_model[krow,18]
 
       # col 21: U ETa
-      start_of_red <- as.numeric(Soil[N_STARTRED,2])
       if(bucket_model[krow,20] > start_of_red){
         bucket_model[krow,21] <-  bucket_model[krow,19]
       }
       else{
-        bucket_model[krow,21] <-  bucket_model[krow,19]*(bucket_model[krow,20]-as.numeric(Soil[N_PWP,2]))/
-          (as.numeric(Soil[N_STARTRED,2])- as.numeric(Soil[N_PWP,2]))
+        bucket_model[krow,21] <-  bucket_model[krow,19]*(bucket_model[krow,20]-pwp)/
+          (start_of_red - pwp)
       }
 
       # col 22: V ET-Balance
       bucket_model[krow,22] <- bucket_model[krow,20] - bucket_model[krow,21]
 
       # col 23: W Seepage
-      if(bucket_model[krow,22] <= as.numeric(Soil[N_FIELD_CAP,2])){
-        bucket_model[krow,23] <-  as.numeric(Soil[N_LAMBDA,2])*(bucket_model[krow,22]-as.numeric(Soil[N_PWP,2]))^2
+      if(bucket_model[krow,22] <= fc){
+        bucket_model[krow,23] <-  lambda*(bucket_model[krow,22]-pwp)^2
       }
       else{
-        bucket_model[krow,23] <-  as.numeric(Soil[N_LAMBDA,2])*(as.numeric(Soil[N_FIELD_CAP,2])-as.numeric(Soil[N_PWP,2]))^2
+        bucket_model[krow,23] <-  lambda*(fc-pwp)^2
       }
 
       # col 24: X Storage Init.-Value
-      if(bucket_model[krow,22] > as.numeric(Soil[N_FIELD_CAP,2])){
-        bucket_model[krow,24] <-  as.numeric(Soil[N_FIELD_CAP,2])
+      if(bucket_model[krow,22] > fc){
+        bucket_model[krow,24] <-  fc
       }
       else{
         bucket_model[krow,24] <- bucket_model[krow,22] - bucket_model[krow,23]
@@ -223,7 +234,7 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
     }
     else{
       # col 17: Q Inf-Limit
-      bucket_model[krow,17] <- (as.numeric(Soil[N_FIELD_CAP,2])-bucket_model[(krow-1),24])*0.25
+      bucket_model[krow,17] <- (fc-bucket_model[(krow-1),24])*0.25
 
       # col 18: R P-Inf
       direct_runoff <- Landuse[13,which(colnames(Landuse)==Soil[N_LANDUSE,2])]
@@ -240,32 +251,32 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
         bucket_model[krow,21] <-  bucket_model[krow,19]
       }
       else{
-        bucket_model[krow,21] <-  bucket_model[krow,19]*(bucket_model[krow,20]-as.numeric(Soil[N_PWP,2]))/
-          (as.numeric(Soil[N_STARTRED,2])- as.numeric(Soil[N_PWP,2]))
+        bucket_model[krow,21] <-  bucket_model[krow,19]*(bucket_model[krow,20]-pwp)/
+          (start_of_red - pwp)
       }
 
       # col 22: V ET-Balance
       bucket_model[krow,22] <- bucket_model[krow,20] - bucket_model[krow,21]
 
       # col 23: W Seepage
-      if(bucket_model[krow,22] <= as.numeric(Soil[N_FIELD_CAP,2])){
-        bucket_model[krow,23] <-  as.numeric(Soil[N_LAMBDA,2])*(bucket_model[krow,22]-as.numeric(Soil[N_PWP,2]))^2
+      if(bucket_model[krow,22] <= fc){
+        bucket_model[krow,23] <-  lambda*(bucket_model[krow,22]-pwp)^2
       }
       else{
-        bucket_model[krow,23] <-  as.numeric(Soil[N_LAMBDA,2])*(as.numeric(Soil[N_FIELD_CAP,2])-as.numeric(Soil[N_PWP,2]))^2
+        bucket_model[krow,23] <-  lambda*(fc-pwp)^2
       }
 
       # col 24: X Storage Init.-Value
-      if(bucket_model[krow,22] > as.numeric(Soil[N_FIELD_CAP,2])){
-        bucket_model[krow,24] <-  as.numeric(Soil[N_FIELD_CAP,2])
+      if(bucket_model[krow,22] > fc){
+        bucket_model[krow,24] <-  fc
       }
       else{
         bucket_model[krow,24] <- bucket_model[krow,22] - bucket_model[krow,23]
       }
     }
     # col 25: Y surface runoff
-    if(bucket_model[krow,22] > as.numeric(Soil[N_FIELD_CAP,2])){
-      bucket_model[krow,25] <- bucket_model[krow,22]-as.numeric(Soil[N_FIELD_CAP,2])+bucket_model[krow,16]-bucket_model[krow,18]
+    if(bucket_model[krow,22] > fc){
+      bucket_model[krow,25] <- bucket_model[krow,22]-fc+bucket_model[krow,16]-bucket_model[krow,18]
     }
     else
     {
