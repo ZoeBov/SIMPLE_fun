@@ -45,17 +45,12 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
   glugla_c <- as.numeric(Soil[N_GWR,2])
   lambda <- glugla_c / dz^2
   
-  test <- c(dz,fc,pwp,start_of_red,init_stor,glugla_c,lambda)
-  print(test)
-  
   # water balance check
   sum_prec   <- 0.
   sum_etr    <- 0.
   sum_runoff <- 0.
   init_swe   <- 0.
   
-
-
   # read LAI from landuse (and not soil physics)
   LAI_model[1,'V3'] = Landuse[14,which(colnames(Landuse)==Soil[N_LANDUSE,2])] # LAI min
   LAI_model[2,'V3'] = Landuse[15,which(colnames(Landuse)==Soil[N_LANDUSE,2])] # LAI max
