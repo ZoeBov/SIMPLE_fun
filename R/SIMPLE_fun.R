@@ -13,7 +13,7 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
   bucket_model <- as.data.frame(matrix(nrow = nrow(Input), ncol = 29))
   colnames(bucket_model) <- c("Date", "Precipitation", "Snow_Water_Equi", "Snow_melt+rain",
                               "ETP_Coeff", "ETP_Input", "LAI", "I-Cap", "Int. ETi(leaf)","I-Bal",
-                              "I-Prec","I-Rem", "I_ETi(litter)", "Bilanz", "Content",
+                              "I-Prec","I-Rem", "I_ETi(litter)", "Balance", "Content",
                               "S-REstn", "Inf-Limit", "P-linf", "Rest-ETA", "Balance_soil",
                               "ETa", "ET-Balance", "Seepage",	"Storage",	"Surface_runoff",
                               "Runoff_total", "I-Leaf",	"I-Litter",	"ETaTotal")
@@ -154,7 +154,7 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
       temp <- c(litter_cap, (0+bucket_model[krow,11])/as.numeric(Soil[N_LITTERRED,2]))
       bucket_model[krow,13] <- min(c(bucket_model[krow,12],min(temp)))
 
-      # col 14: N Bilanz (needed for col 13 & 15)
+      # col 14: N Balance (needed for col 13 & 15)
       bucket_model[krow,14] <- 0 + bucket_model[krow,11] - bucket_model[krow,13]
 
       # col 15: O Content (needed for col 13 & 14)
@@ -170,7 +170,7 @@ SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
       temp <- c(litter_cap, (bucket_model[(krow-1),15]+bucket_model[krow,11])/as.numeric(Soil[N_LITTERRED,2]))
       bucket_model[krow,13] <- min(c(bucket_model[krow,12],min(temp)))
 
-      # col 14: N Bilanz (needed for col 13 & 15)
+      # col 14: N Balance (needed for col 13 & 15)
       bucket_model[krow,14] <- bucket_model[(krow-1),15]  + bucket_model[krow,11] - bucket_model[krow,13]
 
       # col 15: O Content (needed for col 13 & 14)
