@@ -16,10 +16,11 @@ Soil <- read.table(file =paste0(Soil), sep = ";", header = F)
 # print status
 print("done: load input parameters")
 
+# Ensure SIMPLE_fun.R is sourced from the correct location
+# source("R/SIMPLE_fun.R")
 
 #### run bucket-model ####
-source("R/SIMPLE_fun.R")
-SIMPLE_function(as.data.frame(Input), as.data.frame(Landuse),
+bucket_model <- SIMPLE_function(as.data.frame(Input), as.data.frame(Landuse),
              as.data.frame(LAI_model), as.data.frame(Soil))
 
 # print status
