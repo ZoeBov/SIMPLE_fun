@@ -7,19 +7,19 @@ Authors@R: c(
       given = "Zoe E.",
       family = "Bovermann",
       email = "bovermann@iww.uni-hannover.de",
-      = c("aut", "cre"),
+      role = c("aut", "cre"),
       comment = "Translated to R and created the package"
     ),
     person(
       given = "Georg",
       family = "Hörmann",
-      = "cph",
+      role = "cph",
       comment = "Original Excel spreadsheet development"
     ),
     person(
       given = "Kristian",
       family = "Förster",
-      = "ctb",
+      role = "ctb",
       comment = "Extended (snow, surface runoff) in 2022"
     )
 )
@@ -31,4 +31,5 @@ Description: The model processes the input data on a daily basis (or according t
 License: MIT
 Encoding: UTF-8
 LazyData: true
+
 
