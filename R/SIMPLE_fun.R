@@ -6,59 +6,86 @@
 SIMPLE_function <- function(Input, Landuse, LAI_model, Soil) {
 
   # Load libraries
-  suppressMessages(library(data.table))
-  suppressMessages(library(lubridate))
-  suppressMessages(library(writexl))
-  # prepare bucket model matrix
+  suppressMessages({
+    library(data.table)
+    library(lubridate)
+    library(writexl)
+  })
+  # Validate inputs
+  if (!is.data.frame(Input) || !is.data.frame(Landuse) ||
+      !is.data.frame(LAI_model) || !is.data.frame(Soil)) {
+    stop("All inputs must be data frames.")
+  }
+
+  if (nrow(Input) == 0 || nrow(Landuse) == 0 || nrow(LAI_model) == 0 || nrow(Soil) == 0) {
+    stop("Input data frames cannot be empty.")
+  }
+
+  # Prepare bucket model matrix
   bucket_model <- as.data.frame(matrix(nrow = nrow(Input), ncol = 29))
-  colnames(bucket_model) <- c("Date", "Precipitation", "Snow_Water_Equi", "Snow_melt+rain",
-                              "ETP_Coeff", "ETP_Input", "LAI", "I-Cap", "Int. ETi(leaf)","I-Bal",
-                              "I-Prec","I-Rem", "I_ETi(litter)", "Balance", "Content",
-                              "S-REstn", "Inf-Limit", "P-linf", "Rest-ETA", "Balance_soil",
-                              "ETa", "ET-Balance", "Seepage",	"Storage",	"Surface_runoff",
-                              "Runoff_total", "I-Leaf",	"I-Litter",	"ETaTotal")
+  colnames(bucket_model) <- c(
+    "Date", "Precipitation", "Snow_Water_Equi", "Snow_melt+rain",
+    "ETP_Coeff", "ETP_Input", "LAI", "I-Cap", "Int. ETi(leaf)", "I-Bal",
+    "I-Prec", "I-Rem", "I_ETi(litter)", "Balance", "Content",
+    "S-REstn", "Inf-Limit", "P-linf", "Rest-ETA", "Balance_soil",
+    "ETa", "ET-Balance", "Seepage", "Storage", "Surface_runoff",
+    "Runoff_total", "I-Leaf", "I-Litter", "ETaTotal"
+  )
 
-  # copy Input into bucket-model
-  #col 1: A Date
-  bucket_model$Date <- Input[1]
-  # col 2: B Precipitation
-  bucket_model$Precipitation <-  Input[,3]
+  # Copy Input into bucket-model
+  bucket_model$Date <- Input[, 1]
+  bucket_model$Precipitation <- Input[, 3]
 
-  
   # Parameter numbers in soil_physics.txt
-  N_LAYERTHICK <-1
-  N_FIELD_CAP <- 2 #6
-  N_PWP <- 3 # 7 
-  N_STARTRED <-4 #9
-  N_INITSTOR <- 5 #10
-  N_LANDUSE <- 6 #12
-  N_GWR <- 7 #17
-  #N_LITTERCAP <- 7 #18
+  N_LAYERTHICK <- 1
+  N_FIELD_CAP <- 2
+  N_PWP <- 3
+  N_STARTRED <- 4
+  N_INITSTOR <- 5
+  N_LANDUSE <- 6
+  N_GWR <- 7
   N_LITTERRED <- 8
 
-  # initialize model
-  dz <- as.numeric(Soil[N_LAYERTHICK,2])
-  fc <- dz*as.numeric(Soil[N_FIELD_CAP,2])/100
-  pwp <- dz*as.numeric(Soil[N_PWP,2])/100
-  start_of_red <- dz*as.numeric(Soil[N_STARTRED,2])/100
-  init_stor  <- dz*as.numeric(Soil[N_INITSTOR,2])/100
-  glugla_c <- as.numeric(Soil[N_GWR,2])
+  # Initialize model
+  dz <- as.numeric(Soil[N_LAYERTHICK, 2])
+  fc <- dz * as.numeric(Soil[N_FIELD_CAP, 2]) / 100
+  pwp <- dz * as.numeric(Soil[N_PWP, 2]) / 100
+  start_of_red <- dz * as.numeric(Soil[N_STARTRED, 2]) / 100
+  init_stor <- dz * as.numeric(Soil[N_INITSTOR, 2]) / 100
+  glugla_c <- as.numeric(Soil[N_GWR, 2])
   lambda <- glugla_c / dz^2
-  
-  # water balance check
-  sum_prec   <- 0.
-  sum_etr    <- 0.
-  sum_runoff <- 0.
-  init_swe   <- 0.
-  
-  # read LAI from landuse (and not soil physics)
-  LAI_model[1,'V3'] = Landuse[14,which(colnames(Landuse)==Soil[N_LANDUSE,2])] # LAI min
-  LAI_model[2,'V3'] = Landuse[15,which(colnames(Landuse)==Soil[N_LANDUSE,2])] # LAI max
-  LAI_model[3,'V3'] = Landuse[15,which(colnames(Landuse)==Soil[N_LANDUSE,2])] # LAI max
-  LAI_model[4,'V3'] = Landuse[14,which(colnames(Landuse)==Soil[N_LANDUSE,2])] # LAI min
-  #browser()
-  # update Litter according to land use table
-  # Soil[18,2] = Landuse[16,which(colnames(Landuse)==Soil[12,2])] # Litter capacity
+
+  # Water balance check
+  sum_prec <- 0
+  sum_etr <- 0
+  sum_runoff <- 0
+  init_swe <- 0
+
+  # Read LAI from landuse (and not soil physics)
+  LAI_model[1, 'V3'] <- Landuse[14, which(colnames(Landuse) == Soil[N_LANDUSE, 2])]
+  LAI_model[2, 'V3'] <- Landuse[15, which(colnames(Landuse) == Soil[N_LANDUSE, 2])]
+  LAI_model[3, 'V3'] <- Landuse[15, which(colnames(Landuse) == Soil[N_LANDUSE, 2])]
+  LAI_model[4, 'V3'] <- Landuse[14, which(colnames(Landuse) == Soil[N_LANDUSE, 2])]
+
+  # calculate the rest
+  for(krow in 1:nrow(bucket_model)){
+
+    # col 3+4:
+    # first row
+    if(krow==1){
+      # col 3: C snow water equi
+      bucket_model[krow,3] <- 0 # col 3
+
+      # col 4: D Snow melt + rain
+      temp <- c(0, Landuse[17,which(colnames(Landuse)==Soil[N_LANDUSE,2])]*Input[krow,4])
+      if(Input[krow,4] >= 0){
+        bucket_model[krow,4] <- min(0,c(max(temp))) + bucket_model[krow,2]}
+      else{
+        bucket_model[krow,4] <- min(0,c(max(temp))) + 0}
+
+      # col 3 (dependent on col 4)
+      bucket_model[krow,3] <- bucket_model[(krow),3] + bucket_model[krow,2] - bucket_model[krow,4]
+    }
 
   # calculate the rest
   for(krow in 1:nrow(bucket_model)){
