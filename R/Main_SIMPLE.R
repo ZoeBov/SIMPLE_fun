@@ -1,13 +1,11 @@
 ## Main SIMPLE
-rm(list=ls())
-
 #### set working directory + file directory and load data ####
 
-data_file <- "Meteo_Input.txt"
-land_use <- "Land_use.txt"
-LAI_model <- "LAI_model.txt"
-Soil <- "Soil_physics.txt"
-output <- 'SIMPLE_bucket_model.xlsx'
+data_file <- "R/Meteo_Input.txt"
+land_use <- "R/Land_use.txt"
+LAI_model <- "R/LAI_model.txt"
+Soil <- "R/Soil_physics.txt"
+output <- 'R/SIMPLE_bucket_model.xlsx'
 
 # import Global Input data
 Input <-  read.table(file =paste0(data_file), sep = "", header = T)
@@ -20,7 +18,7 @@ print("done: load input parameters")
 
 
 #### run bucket-model ####
-source("SIMPLE_fun.R")
+source("R/SIMPLE_fun.R")
 SIMPLE_function(as.data.frame(Input), as.data.frame(Landuse),
              as.data.frame(LAI_model), as.data.frame(Soil))
 
