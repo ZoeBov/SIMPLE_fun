@@ -11,27 +11,21 @@ SIMPLE_function(Input, Landuse, LAI_model, Soil, ETP0 = NULL)
 }
 \arguments{
     \item{Input}{
-  A data frame containing meteorological input parameters required by the model, with the following columns:
-  \describe{
-    \item{Date}{A date column formatted as \code{YYYY-MM-DD}.}
-    \item{DOY}{Day of the year as an integer (1 to 365 or 366).}
-    \item{P}{Precipitation in millimeters (\code{mm}).}
-    \item{T14}{Temperature in degrees Celsius.}
-    \item{R14}{Relative humidity.}
-    \item{ET0}{Potential evapotranspiration in (\code{mm}).}
-  }
+    Meteo_Input.txt is a sample meteorological forcing file. Column meanings are: Date, Day of year, daily precipitation total (mm/d), 
+    Temperature in the afternoon (°C), relative humidity in the afternoon (%). An optional 6th column includes daily potential evapotranspiration totals (mm/d),
+    e.g., derived from crop reference evapotranspiration. If this column does not exist, evapotranspiration is computed internally using the Haude approach.
   }
   \item{Landuse}{
-  A data frame specifying land use parameters necessary for model predictions.
+    Land_Use.txt provides relevant land use-dependent parameters for some typical land use classifications. Columns represent land use classes and rows list relevant parameters
+    (names in first column). The first 12 rows include multipliers for the Haude potential evapotranspiration model (1 value per month).
   }
   \item{LAI_model}{
-  A data frame containing Leaf Area Index model parameters used to calculate evapotranspiration and other processes.
+    LAI_model.txt includes a table, first column is an index, second column represents Day of Year values and the third column indicates 
+    whether a winter (low) or summer (high) value for LAI is applied (see values in Land_Use.txt.
   }
   \item{Soil}{
-  A data frame with soil physics parameters required for the simulation of infiltration, storage, and runoff.
-  }
-  \item{ETP0}{
-  (Optional) A numeric value specifying the initial evapotranspiration. If not provided, it is calculated within the function.
+    Soil_physics.txt is a csv file with the most relevant model parameters of the (soil) model. First column is a short descriptor, 
+    second column represents corresponding values used by the model, while the third column shows the units.
   }
 }
 \details{
@@ -63,3 +57,4 @@ SIMPLE_function(Input, Landuse, LAI_model, Soil)
 \keyword{modeling}
 \concept{water balance}
 \concept{bucket model}
+
